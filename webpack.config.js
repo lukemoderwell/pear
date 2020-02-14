@@ -2,7 +2,6 @@ const webpack = require('webpack');
 
 module.exports = {
   entry: './src/index.js',
-  mode: 'development',
   module: {
     rules: [
       {
@@ -18,8 +17,7 @@ module.exports = {
   output: {
     path: __dirname + '/dist',
     publicPath: '/',
-    filename: 'index.js',
-    libraryTarget: 'commonjs2'
+    filename: 'bundle.js'
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin()
@@ -27,8 +25,5 @@ module.exports = {
   devServer: {
     contentBase: './dist',
     hot: true
-  },
-  externals: {
-    'react': 'commonjs react' 
   }
 };
