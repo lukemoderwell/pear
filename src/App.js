@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import Content from './Content';
 
 const App = () => {
   const API_KEY = process.env.AIRTABLE_API_KEY;
-  const [list, setList] = useState([]);
-  const [styles, setStyles] = useState({
+  const [styleId, setStyleId] = useState(0);
+  const [allStyles, setList] = useState([]);
+  const [currentStyle, setStyles] = useState({
     titleFont: '',
     bodyFont: '',
     primaryColor: '',
@@ -27,7 +28,7 @@ const App = () => {
     base('styles')
       .find(id)
       .then(record => {
-        let _styles = { ...styles };
+        let _styles = { ...currentStyle };
         const primaryFont = base('fonts')
           .find(record.fields.primary[0])
           .then(res => {
@@ -86,7 +87,7 @@ const App = () => {
       .eachPage(
         function page(records, fetchNextPage) {
           records.forEach(record => {
-            setList(list.push(record));
+            setList(allStyles.push(record));
           });
           // To fetch the next page of records, call `fetchNextPage`.
           // If there are more records, `page` will get called again.
@@ -98,10 +99,14 @@ const App = () => {
             console.error(err);
             return;
           }
-          getSetStyles(list[4].id);
+          getSetStyles(allStyles[styleId].id);
         }
       );
   }, []);
+
+  // useLayoutEffect(() => {
+  //   getSetStyles(allStyles[styleId].id);
+  // }, [styleId]);
 
   return (
     <div
@@ -109,13 +114,20 @@ const App = () => {
         display: 'flex'
       }}
     >
-      {styles.titleFont && (
+      <div>
+        <input
+          type="number"
+          value={styleId}
+          onChange={event => setStyleId(event.target.value)}
+        />
+      </div>
+      {currentStyle.titleFont && (
         <Content
-          titleFont={styles.titleFont}
-          bodyFont={styles.bodyFont}
-          primary={styles.primaryColor}
-          secondary={styles.secondaryColor}
-          tertiary={styles.tertiaryColor}
+          titleFont={currentStyle.titleFont}
+          bodyFont={currentStyle.bodyFont}
+          primary={currentStyle.primaryColor}
+          secondary={currentStyle.secondaryColor}
+          tertiary={currentStyle.tertiaryColor}
         />
       )}
     </div>
