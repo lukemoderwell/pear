@@ -30,7 +30,8 @@ module.exports = env => {
         meta: {
           charset: { charset: 'utf-8' },
           viewport: 'width=device-width, initial-scale=1'
-        }
+        },
+        template: './src/index.html'
       })
     ],
     entry: './src/index.js',
