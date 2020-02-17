@@ -3,7 +3,14 @@ const dotenv = require('dotenv');
 
 module.exports = () => {
   // call dotenv and it will return an Object with a parsed key
-  const env = dotenv.config().parsed;
+  const result = dotenv.config();
+
+  if (result.error) {
+    throw result.error;
+  }
+
+  const env = result.parsed;
+  console.log(env);
 
   // reduce it to a nice object, the same as before
   const envKeys = Object.keys(env).reduce((prev, next) => {
