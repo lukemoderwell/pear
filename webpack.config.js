@@ -1,5 +1,7 @@
 const webpack = require('webpack');
 const dotenv = require('dotenv');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const path = require('path');
 
 module.exports = env => {
   let envKeys = {};
@@ -22,7 +24,14 @@ module.exports = env => {
   return {
     plugins: [
       new webpack.DefinePlugin(envKeys),
-      new webpack.HotModuleReplacementPlugin()
+      new webpack.HotModuleReplacementPlugin(),
+      new HtmlWebpackPlugin({
+        title: 'pear',
+        meta: {
+          charset: { charset: 'utf-8' },
+          viewport: 'width=device-width, initial-scale=1'
+        }
+      })
     ],
     entry: './src/index.js',
     module: {
@@ -38,7 +47,7 @@ module.exports = env => {
       extensions: ['*', '.js', '.jsx']
     },
     output: {
-      path: __dirname + '/dist',
+      path: path.resolve(__dirname + '/dist'),
       publicPath: '/',
       filename: 'bundle.js'
     },
