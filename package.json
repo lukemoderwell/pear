@@ -1,15 +1,15 @@
 {
-  "name": "minimal-react-webpack-babel-setup",
-  "version": "1.0.0",
-  "description": "",
+  "name": "pear",
+  "version": "0.0.1",
+  "description": "Brand Personality Pairing Tool",
   "main": "index.js",
   "scripts": {
-    "build": "webpack",
+    "build": "webpack --config ./webpack.config.js --mode production",
     "start": "webpack-dev-server --config ./webpack.config.js --mode development",
     "test": "echo \"No test specified\" && exit 0"
   },
   "keywords": [],
-  "author": "",
+  "author": "Luke Moderwell",
   "license": "ISC",
   "devDependencies": {
     "@babel/core": "^7.5.5",
