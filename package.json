@@ -16,6 +16,7 @@
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-react": "^7.0.0",
     "babel-loader": "^8.0.6",
+    "babel-plugin-styled-components": "^1.10.7",
     "dotenv": "^8.2.0",
     "react-hot-loader": "^4.12.10",
     "webpack": "^4.39.1",
@@ -25,6 +26,7 @@
   "dependencies": {
     "airtable": "^0.8.1",
     "react": "^16.8.6",
-    "react-dom": "^16.8.6"
+    "react-dom": "^16.8.6",
+    "styled-components": "^5.0.1"
   }
 }

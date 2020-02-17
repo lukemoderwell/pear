@@ -1,11 +1,19 @@
-import React, { useEffect, useLayoutEffect, useState } from 'react';
+import React, { useEffect, useState, Fragment } from 'react';
 import Content from './Content';
+import Controls from './Controls';
 
 const App = () => {
   const API_KEY = process.env.AIRTABLE_API_KEY;
-  const [styleId, setStyleId] = useState(0);
-  const [allStyles, setList] = useState([]);
-  const [currentStyle, setStyles] = useState({
+  const [params, setParams] = useState({
+    digital: 50,
+    handmade: 50,
+    clean: 50,
+    complex: 50,
+    serious: 50,
+    playful: 50
+  });
+  const [currentStyle, setCurrentStyle] = useState({
+    name: '',
     titleFont: '',
     bodyFont: '',
     primaryColor: '',
@@ -15,71 +23,15 @@ const App = () => {
 
   const Airtable = require('airtable');
   let base;
+  let allStyles = [];
 
   const configAirtable = () => {
+    console.log('configuring airtable');
     Airtable.configure({
       endpointUrl: 'https://api.airtable.com',
       apiKey: API_KEY
     });
     base = Airtable.base('app4XYxF3LslU9cVh');
-  };
-
-  const getSetStyles = id => {
-    base('styles')
-      .find(id)
-      .then(record => {
-        let _styles = { ...currentStyle };
-        const primaryFont = base('fonts')
-          .find(record.fields.primary[0])
-          .then(res => {
-            return (_styles.titleFont = res.fields.name);
-          });
-
-        const secondaryFont = base('fonts')
-          .find(record.fields.secondary[0])
-          .then(res => {
-            return (_styles.bodyFont = res.fields.name);
-          });
-
-        const primaryColor = base('colors')
-          .find(record.fields.palette[0])
-          .then(res => {
-            return (_styles.primaryColor = res.fields.id);
-          });
-
-        const secondaryColor = base('colors')
-          .find(record.fields.palette[1])
-          .then(res => {
-            return (_styles.secondaryColor = res.fields.id);
-          });
-
-        const tertiaryColor = base('colors')
-          .find(record.fields.palette[2])
-          .then(res => {
-            return (_styles.tertiaryColor = res.fields.id);
-          })
-          .catch(err => {
-            console.log(err);
-          });
-
-        return Promise.all([
-          primaryFont,
-          secondaryFont,
-          primaryColor,
-          secondaryColor,
-          tertiaryColor
-        ]).then(() => {
-          setStyles({ ..._styles });
-        });
-      })
-      .catch(err => {
-        console.error(err);
-        return;
-      });
-  };
-
-  useEffect(() => {
-    configAirtable();
     base('styles')
       .select({
         view: 'Grid view'
@@ -87,7 +39,9 @@ const App = () => {
       .eachPage(
         function page(records, fetchNextPage) {
           records.forEach(record => {
-            setList(allStyles.push(record));
+            if (record !== undefined) {
+              allStyles.push(record);
+            }
           });
           // To fetch the next page of records, call `fetchNextPage`.
           // If there are more records, `page` will get called again.
@@ -99,36 +53,89 @@ const App = () => {
             console.error(err);
             return;
           }
-          getSetStyles(allStyles[styleId].id);
+          matchParams();
         }
       );
-  }, []);
+  };
 
-  // useLayoutEffect(() => {
-  //   getSetStyles(allStyles[styleId].id);
-  // }, [styleId]);
+  const getRandomInt = (max, min) => {
+    const _max = max - 1;
+    return Math.floor(Math.random() * (_max - min) + min);
+  };
+
+  const matchParams = () => {
+    let matches = [];
+    for (let i in allStyles) {
+      if (allStyles[i].fields !== undefined) {
+        const data = allStyles[i].fields;
+        if (params.digital > 50 && data.digital > 50) {
+          matches.push(allStyles[i]);
+        }
+        if (params.handmade > 50 && data.handmade > 50) {
+          matches.push(allStyles[i]);
+        }
+        matches.push(allStyles[i]);
+        if (params.clean > 50 && data.clean > 50) {
+        }
+        if (params.complex > 50 && data.complex > 50) {
+          matches.push(allStyles[i]);
+        }
+        if (params.serious > 50 && data.serious > 50) {
+          matches.push(allStyles[i]);
+        }
+        if (params.playful > 50 && data.playful > 50) {
+          matches.push(allStyles[i]);
+        }
+      }
+    }
+    const random = getRandomInt(matches.length, 0);
+    const selected = matches[random].fields;
+    console.log(selected);
+    setCurrentStyle({
+      ...currentStyle,
+      name: selected.name,
+      titleFont: selected.primary,
+      bodyFont: selected.secondary,
+      primaryColor: selected.palette[0],
+      secondaryColor: selected.palette[1],
+      tertiaryColor: selected.palette[2]
+    });
+  };
+
+  useEffect(() => {
+    window.addEventListener('paramsUpdated', e => {
+      setParams({ ...params, [e.detail.id]: e.detail.value });
+      matchParams();
+    });
+    return () =>
+      window.removeEventListener('paramsUpdated', e => {
+        setParams({ ...params, [e.detail.id]: e.detail.value });
+      });
+  }, [params]);
+
+  useEffect(() => {
+    configAirtable();
+  }, []);
 
   return (
     <div
       style={{
-        display: 'flex'
+        display: 'grid',
+        gridTemplateColumns: '70% 30%'
       }}
     >
-      <div>
-        <input
-          type="number"
-          value={styleId}
-          onChange={event => setStyleId(event.target.value)}
-        />
-      </div>
       {currentStyle.titleFont && (
-        <Content
-          titleFont={currentStyle.titleFont}
-          bodyFont={currentStyle.bodyFont}
-          primary={currentStyle.primaryColor}
-          secondary={currentStyle.secondaryColor}
-          tertiary={currentStyle.tertiaryColor}
-        />
+        <Fragment>
+          <Content
+            name={currentStyle.name}
+            titleFont={currentStyle.titleFont}
+            bodyFont={currentStyle.bodyFont}
+            primary={currentStyle.primaryColor}
+            secondary={currentStyle.secondaryColor}
+            tertiary={currentStyle.tertiaryColor}
+          />
+          <Controls params={params}></Controls>
+        </Fragment>
       )}
     </div>
   );
