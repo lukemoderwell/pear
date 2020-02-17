@@ -4,7 +4,7 @@
   "description": "Brand Personality Pairing Tool",
   "main": "index.js",
   "scripts": {
-    "build": "webpack --config ./webpack.config.js --mode production",
+    "build": "webpack --env.production --config ./webpack.config.js --mode production",
     "start": "webpack-dev-server --config ./webpack.config.js --mode development",
     "test": "echo \"No test specified\" && exit 0"
   },
