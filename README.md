@@ -1,3 +1,3 @@
 # pear
 
-brand personality simualation
+brand personality simulation made with Airtable.
