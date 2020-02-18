@@ -3,7 +3,8 @@ import Content from './Content';
 import Controls from './Controls';
 
 const App = () => {
-  const API_KEY = process.env.AIRTABLE_API_KEY;
+  const API_KEY =
+    process.env.AIRTABLE_API_KEY || process.env.REACT_APP_AIRTABLE_API_KEY;
   const [params, setParams] = useState({
     digital: 50,
     handmade: 50,
