@@ -7,7 +7,7 @@ module.exports = env => {
   let envKeys = {};
   // call dotenv and it will return an Object with a parsed key
   if (env.production === true) {
-    window.ENV.AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
+    console.log('production build');
   } else {
     const result = dotenv.config();
 
@@ -15,7 +15,9 @@ module.exports = env => {
       throw result.error;
     }
 
-    const localEnv = result.parsed;
+    const localEnv = env.production
+      ? process.env.AIRTABLE_API_KEY
+      : result.parsed;
 
     // reduce it to a nice object, the same as before
     envKeys = Object.keys(localEnv).reduce((prev, next) => {
