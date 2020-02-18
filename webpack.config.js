@@ -11,7 +11,6 @@ module.exports = env => {
     console.log('production build');
     const key = `AIRTABLE_API_KEY=${process.env.AIRTABLE_API_KEY}`;
     fs.writeFileSync('./.env', key);
-    console.log(key);
   }
   const result = dotenv.config();
 
