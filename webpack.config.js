@@ -6,7 +6,9 @@ const path = require('path');
 module.exports = env => {
   let envKeys = {};
   // call dotenv and it will return an Object with a parsed key
-  if (env.production !== true) {
+  if (env.production === true) {
+    window.ENV.AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
+  } else {
     const result = dotenv.config();
 
     if (result.error) {
