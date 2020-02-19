@@ -3,14 +3,11 @@ import Content from './Content';
 import Controls from './Controls';
 
 const App = () => {
-  const API_KEY = process.env.AIRTABLE_API_KEY || window.ENV.AIRTABLE_API_KEY;
+  const API_KEY = process.env.AIRTABLE_API_KEY;
   const [params, setParams] = useState({
     digital: 50,
-    handmade: 50,
     clean: 50,
-    complex: 50,
-    serious: 50,
-    playful: 50
+    formal: 50
   });
   const [currentStyle, setCurrentStyle] = useState({
     name: '',
@@ -63,43 +60,44 @@ const App = () => {
     return Math.floor(Math.random() * (_max - min) + min);
   };
 
+  const isSimilar = (a, b, range) => {
+    if (a <= b + range && a >= b - range) {
+      return true;
+    }
+  };
+
   const matchParams = () => {
     let matches = [];
     for (let i in allStyles) {
       if (allStyles[i].fields !== undefined) {
         const data = allStyles[i].fields;
-        if (params.digital > 50 && data.digital > 50) {
+        if (isSimilar(data.digital, params.digital, 10)) {
           matches.push(allStyles[i]);
+          continue;
         }
-        if (params.handmade > 50 && data.handmade > 50) {
+        if (isSimilar(data.clean, params.clean, 10)) {
           matches.push(allStyles[i]);
+          continue;
         }
-        matches.push(allStyles[i]);
-        if (params.clean > 50 && data.clean > 50) {
-        }
-        if (params.complex > 50 && data.complex > 50) {
+        if (isSimilar(data.formal, params.formal, 10)) {
           matches.push(allStyles[i]);
-        }
-        if (params.serious > 50 && data.serious > 50) {
-          matches.push(allStyles[i]);
-        }
-        if (params.playful > 50 && data.playful > 50) {
-          matches.push(allStyles[i]);
+          continue;
         }
       }
     }
     const random = getRandomInt(matches.length, 0);
-    const selected = matches[random].fields;
-    console.log(selected);
-    setCurrentStyle({
-      ...currentStyle,
-      name: selected.name,
-      titleFont: selected.primary,
-      bodyFont: selected.secondary,
-      primaryColor: selected.palette[0],
-      secondaryColor: selected.palette[1],
-      tertiaryColor: selected.palette[2]
-    });
+    if (matches[random] && matches[random].fields !== undefined) {
+      const selected = matches[random].fields;
+      setCurrentStyle({
+        ...currentStyle,
+        name: selected.name,
+        titleFont: selected.primary,
+        bodyFont: selected.secondary,
+        primaryColor: selected.palette[0],
+        secondaryColor: selected.palette[1],
+        tertiaryColor: selected.palette[2] || selected.palette[1]
+      });
+    }
   };
 
   useEffect(() => {
