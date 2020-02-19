@@ -5,8 +5,6 @@ import Controls from './Controls';
 const App = () => {
   const API_KEY = process.env.AIRTABLE_API_KEY;
   const [params, setParams] = useState({
-    digital: 50,
-    clean: 50,
     formal: 50
   });
   const [currentStyle, setCurrentStyle] = useState({
@@ -50,7 +48,7 @@ const App = () => {
             console.error(err);
             return;
           }
-          matchParams();
+          setSelectedDesign(allStyles);
         }
       );
   };
@@ -66,28 +64,10 @@ const App = () => {
     }
   };
 
-  const matchParams = () => {
-    let matches = [];
-    for (let i in allStyles) {
-      if (allStyles[i].fields !== undefined) {
-        const data = allStyles[i].fields;
-        if (isSimilar(data.digital, params.digital, 10)) {
-          matches.push(allStyles[i]);
-          continue;
-        }
-        if (isSimilar(data.clean, params.clean, 10)) {
-          matches.push(allStyles[i]);
-          continue;
-        }
-        if (isSimilar(data.formal, params.formal, 10)) {
-          matches.push(allStyles[i]);
-          continue;
-        }
-      }
-    }
-    const random = getRandomInt(matches.length, 0);
-    if (matches[random] && matches[random].fields !== undefined) {
-      const selected = matches[random].fields;
+  const setSelectedDesign = designs => {
+    const random = getRandomInt(designs.length, 0);
+    if (designs[random] && designs[random].fields !== undefined) {
+      const selected = designs[random].fields;
       setCurrentStyle({
         ...currentStyle,
         name: selected.name,
@@ -98,6 +78,20 @@ const App = () => {
         tertiaryColor: selected.palette[2] || selected.palette[1]
       });
     }
+  };
+
+  const matchParams = () => {
+    let matches = [];
+    for (let i in allStyles) {
+      if (allStyles[i].fields !== undefined) {
+        const data = allStyles[i].fields;
+        if (isSimilar(data.formal, params.formal, 20)) {
+          matches.push(allStyles[i]);
+          continue;
+        }
+      }
+    }
+    setSelectedDesign(matches);
   };
 
   useEffect(() => {
